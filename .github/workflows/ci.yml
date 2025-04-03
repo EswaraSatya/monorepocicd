@@ -11,8 +11,7 @@ jobs:
   affected:
     runs-on: ubuntu-latest
     outputs:
-      affected_apps: ${{ steps.affected.outputs.apps }}
-    
+              affected_projects: ${{ steps.get-affected-projects.outputs.NX_OUTPUT }}    
     steps:
       - name: Checkout
         uses: actions/checkout@v3
