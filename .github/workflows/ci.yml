@@ -21,8 +21,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Debug Affected Apps
-        run: npx nx show projects --affected --json
 
       - name: Get Affected Apps
         id: affected
