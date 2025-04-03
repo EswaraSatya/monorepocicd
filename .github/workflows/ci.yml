@@ -21,11 +21,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          
+      - name: Debug Affected Apps
+        run: npx nx show projects --affected --json
+
       - name: Get Affected Apps
         id: affected
         run: |
-          AFFECTED_APPS=$(npx nx show projects --affected --json | jq -c '.[]')
+          AFFECTED_APPS=$(npx nx show projects --affected --json | jq -c 'if . then . else [] end')
+          echo "Affected Apps: $AFFECTED_APPS"
           echo "affected_apps=$AFFECTED_APPS" >> "$GITHUB_ENV"
           echo "affected_apps=$AFFECTED_APPS" >> "$GITHUB_OUTPUT"
           
