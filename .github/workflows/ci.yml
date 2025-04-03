@@ -46,9 +46,6 @@ jobs:
 
           echo "Filtered apps: $FILTERED_APPS"
           echo "::set-output name=apps::$FILTERED_APPS"
-
-      - name: Debug affected projects
-        run: echo "Affected apps: ${{ steps.affected.outputs.apps }}"
         
       - name: Install dependencies
         run: npm install
