@@ -22,30 +22,32 @@ jobs:
         with:
           node-version: 18
       - name: Print affected projects
-        id: affected
-        run: |
-          # Get all affected files
-          AFFECTED_FILES=$(git diff --name-only origin/main HEAD)
+      - name: Get Affected Apps
+        run: echo "affected=$(nx affected:apps)" >> "$GITHUB_ENV"
+        # id: affected
+        # run: |
+        #   # Get all affected files
+        #   AFFECTED_FILES=$(git diff --name-only origin/main HEAD)
 
-          echo "Affected files: $AFFECTED_FILES"
+        #   echo "Affected files: $AFFECTED_FILES"
 
-          # Determine which apps are affected
-          AFFECTED_APPS=()
-          if echo "$AFFECTED_FILES" | grep -q "^app1/"; then
-            AFFECTED_APPS+=("app1")
-          fi
-          if echo "$AFFECTED_FILES" | grep -q "^app2/"; then
-            AFFECTED_APPS+=("app2")
-          fi
-          if echo "$AFFECTED_FILES" | grep -q "^dashboard/"; then
-            AFFECTED_APPS+=("dashboard")
-          fi
+        #   # Determine which apps are affected
+        #   AFFECTED_APPS=()
+        #   if echo "$AFFECTED_FILES" | grep -q "^app1/"; then
+        #     AFFECTED_APPS+=("app1")
+        #   fi
+        #   if echo "$AFFECTED_FILES" | grep -q "^app2/"; then
+        #     AFFECTED_APPS+=("app2")
+        #   fi
+        #   if echo "$AFFECTED_FILES" | grep -q "^dashboard/"; then
+        #     AFFECTED_APPS+=("dashboard")
+        #   fi
 
-          # Convert to JSON array format
-          FILTERED_APPS=$(printf '%s\n' "${AFFECTED_APPS[@]}" | jq -R -s -c 'split("\n") | map(select(. != ""))')
+        #   # Convert to JSON array format
+        #   FILTERED_APPS=$(printf '%s\n' "${AFFECTED_APPS[@]}" | jq -R -s -c 'split("\n") | map(select(. != ""))')
 
-          echo "Filtered apps: $FILTERED_APPS"
-          echo "::set-output name=apps::$FILTERED_APPS"
+        #   echo "Filtered apps: $FILTERED_APPS"
+        #   echo "::set-output name=apps::$FILTERED_APPS"
         
       - name: Install dependencies
         run: npm install
