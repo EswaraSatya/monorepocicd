@@ -11,7 +11,8 @@ jobs:
   affected:
     runs-on: ubuntu-latest
     outputs:
-              affected_projects: ${{ steps.get-affected-projects.outputs.NX_OUTPUT }}    
+      affected_projects: ${{ steps.affected.outputs.apps }}    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -20,13 +21,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Install Nx CLI
-        run: npm install -g nx jq
-
       - name: Print affected projects
         id: affected
         run: |
@@ -53,13 +47,24 @@ jobs:
           echo "Filtered apps: $FILTERED_APPS"
           echo "::set-output name=apps::$FILTERED_APPS"
 
+      - name: Debug affected projects
+        run: echo "Affected apps: ${{ steps.affected.outputs.apps }}"
+        
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Nx CLI
+        run: npm install -g nx jq
+
+
+
   deploy:
     needs: affected
     runs-on: ubuntu-latest
-    if: ${{ needs.affected.outputs.affected_apps != '[]' && needs.affected.outputs.affected_apps != '' }}
+    if: ${{ needs.affected.outputs.affected_projects != '[]' && needs.affected.outputs.affected_projects != '' }}
     strategy:
       matrix:
-        app: ${{ fromJson(needs.affected.outputs.affected_apps) }}
+        app: ${{ fromJson(needs.affected.outputs.affected_projects) }}
     name: 🚀 Deploy ${{ matrix.app }}
     
     steps:
