@@ -69,7 +69,7 @@
         }
       }
     },
-    "@nx/webpack:webpack": {
+    "@nx/rspack:rspack": {
       "inputs": [
         "production",
         "^production",

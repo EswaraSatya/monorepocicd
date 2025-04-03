@@ -3,10 +3,9 @@ import { withModuleFederation } from '@nx/rspack/module-federation';
 import baseConfig from './module-federation.config';
 
 export default function (pluginOptions: any = {}, context: any = {}) {
-  // ✅ Ensure context.project.root is defined
-  context.project ??= {};
-  context.project.root = process.cwd()||context.project.root || __dirname.replace(/\\/g, '/').split('/packages/')[1].split('/')[0]||{};
-
+  // Ensure context is always defined
+  context ??= { project: { root: process.cwd() }, options: {} };
+  context.project ??= { root: process.cwd() };
   context.options ??= {};
   context.options.output ??= { publicPath: 'auto' };
 

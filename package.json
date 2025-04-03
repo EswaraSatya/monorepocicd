@@ -2,11 +2,13 @@
   "name": "@my-mfe-workspace/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "preinstall": "npx npm-force-resolutions"
+  },
   "private": true,
   "devDependencies": {
     "@eslint/js": "^9.8.0",
-    "@module-federation/enhanced": "~0.6.0",
+    "@module-federation/enhanced": "^0.9.0",
     "@nrwl/react": "^19.8.4",
     "@nrwl/web": "^19.8.4",
     "@nx/eslint": "19.8.4",
