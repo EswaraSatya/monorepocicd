@@ -22,13 +22,13 @@ jobs:
         with:
           node-version: 18
 
-      - name: Get Affected Apps
-        id: affected
-        run: |
-          AFFECTED_APPS=$(npx nx show projects --affected --json | jq -c 'if . then . else [] end')
-          echo "Affected Apps: $AFFECTED_APPS"
-          echo "affected_apps=$AFFECTED_APPS" >> "$GITHUB_ENV"
-          echo "affected_apps=$AFFECTED_APPS" >> "$GITHUB_OUTPUT"
+      # - name: Get Affected Apps
+      #   id: affected
+      #   run: |
+      #     AFFECTED_APPS=$(npx nx show projects --affected --json | jq -c 'if . then . else [] end')
+      #     echo "Affected Apps: $AFFECTED_APPS"
+      #     echo "affected_apps=$AFFECTED_APPS" >> "$GITHUB_ENV"
+      #     echo "affected_apps=$AFFECTED_APPS" >> "$GITHUB_OUTPUT"
           
       - name: Install dependencies
         run: npm install
