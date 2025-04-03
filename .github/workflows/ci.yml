@@ -10,7 +10,9 @@ on:
 jobs:
   affected:
     runs-on: ubuntu-latest
-
+    outputs:
+      affected_apps: ${{ steps.affected.outputs.apps }}
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -24,18 +26,25 @@ jobs:
         run: npm install
 
       - name: Install Nx CLI
-        run: npm install -g nx
+        run: npm install -g nx jq
 
       - name: Print affected projects
+        id: affected
         run: |
-          echo "Affected projects:"
-          npx nx show projects --affected --base=origin/main --head=HEAD
+          AFFECTED=$(npx nx show projects --affected --base=origin/main --head=HEAD --json | jq -r '. | join(", ")')
+          echo "Affected projects: $AFFECTED"
+          echo "apps=$AFFECTED" >> $GITHUB_ENV
 
-      - name: Build affected apps
+  deploy:
+    needs: affected
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: ${{ fromJson(env.apps) }}
+    name: 🚀 Deploy ${{ matrix.app }}
+    
+    steps:
+      - name: Deploy ${{ matrix.app }}
         run: |
-          AFFECTED=$(npx nx show projects --affected --base=origin/main --head=HEAD --json | jq -r '.[]')
-
-          for project in $AFFECTED; do
-            echo "🛠 Building $project"
-            npx nx build $project
-          done
+          echo "Deploying ${{ matrix.app }}..."
+          npx nx build ${{ matrix.app }}
