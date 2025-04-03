@@ -31,12 +31,26 @@ jobs:
       - name: Print affected projects
         id: affected
         run: |
-          AFFECTED=$(npx nx show projects --affected --base=origin/main --head=HEAD --json | jq -r '. | join(", ")')
-          echo "Affected projects: $AFFECTED"
+          # Get all affected files
+          AFFECTED_FILES=$(git diff --name-only origin/main HEAD)
 
-          # Extract only app1, app2, or dashboard from the affected projects
-          FILTERED_APPS=$(echo "$AFFECTED" | tr ', ' '\n' | grep -E '^(app1|app2|dashboard)$' | jq -R -s -c 'split("\n") | map(select(. != ""))')
-          
+          echo "Affected files: $AFFECTED_FILES"
+
+          # Determine which apps are affected
+          AFFECTED_APPS=()
+          if echo "$AFFECTED_FILES" | grep -q "^app1/"; then
+            AFFECTED_APPS+=("app1")
+          fi
+          if echo "$AFFECTED_FILES" | grep -q "^app2/"; then
+            AFFECTED_APPS+=("app2")
+          fi
+          if echo "$AFFECTED_FILES" | grep -q "^dashboard/"; then
+            AFFECTED_APPS+=("dashboard")
+          fi
+
+          # Convert to JSON array format
+          FILTERED_APPS=$(printf '%s\n' "${AFFECTED_APPS[@]}" | jq -R -s -c 'split("\n") | map(select(. != ""))')
+
           echo "Filtered apps: $FILTERED_APPS"
           echo "::set-output name=apps::$FILTERED_APPS"
 
