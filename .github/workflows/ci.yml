@@ -14,7 +14,7 @@ jobs:
       affected_apps: ${{ steps.affected.outputs.apps }}
     
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Set up Node.js
@@ -25,39 +25,32 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install Nx CLI & jq
+      - name: Install Nx CLI
         run: npm install -g nx jq
 
-      - name: Determine affected projects
+      - name: Print affected projects
         id: affected
         run: |
-          AFFECTED=$(npx nx show projects --affected --base=origin/main --head=HEAD --json | jq -c 'select(. != null)')
+          AFFECTED=$(npx nx show projects --affected --base=origin/main --head=HEAD --json | jq -r '. | join(", ")')
+          echo "Affected projects: $AFFECTED"
 
-          if [[ -z "$AFFECTED" ]]; then
-            echo "No affected projects detected."
-            echo "apps=[]" >> "$GITHUB_OUTPUT"
-          else
-            echo "Affected projects: $AFFECTED"
-            echo "apps=$AFFECTED" >> "$GITHUB_OUTPUT"
-          fi
+          # Extract only app1, app2, or dashboard from the affected projects
+          FILTERED_APPS=$(echo "$AFFECTED" | tr ', ' '\n' | grep -E '^(app1|app2|dashboard)$' | jq -R -s -c 'split("\n") | map(select(. != ""))')
+          
+          echo "Filtered apps: $FILTERED_APPS"
+          echo "apps=$FILTERED_APPS" >> $GITHUB_ENV
 
   deploy:
     needs: affected
     runs-on: ubuntu-latest
-    if: ${{ needs.affected.outputs.affected_apps != '[]' }} # ✅ Skip if no affected apps
+    if: env.apps != '[]'  # Ensures it only runs if apps are affected
     strategy:
       matrix:
-        app: ${{ fromJson(needs.affected.outputs.affected_apps) }}
+        app: ${{ fromJson(env.apps) }}
     name: 🚀 Deploy ${{ matrix.app }}
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build and Deploy ${{ matrix.app }}
+      - name: Deploy ${{ matrix.app }}
         run: |
-          echo "🚀 Deploying ${{ matrix.app }}..."
+          echo "Deploying ${{ matrix.app }}..."
           npx nx build ${{ matrix.app }}
