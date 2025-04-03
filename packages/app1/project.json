@@ -1,5 +1,6 @@
 {
   "name": "app1",
+  "root": "packages/app1",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/app1/src",
   "projectType": "application",
