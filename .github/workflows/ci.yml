@@ -31,20 +31,26 @@ jobs:
       - name: Print affected projects
         id: affected
         run: |
-          AFFECTED=$(npx nx show projects --affected --base=origin/main --head=HEAD --json | jq -r '. | join(", ")')
+          AFFECTED=$(npx nx show projects --affected --base=origin/main --head=HEAD --json | jq -c '.')
           echo "Affected projects: $AFFECTED"
-          echo "apps=$AFFECTED" >> $GITHUB_ENV
+          echo "::set-output name=apps::$AFFECTED"
 
   deploy:
     needs: affected
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        app: ${{ fromJson(env.apps) }}
+        app: ${{ fromJson(needs.affected.outputs.affected_apps) }}
     name: 🚀 Deploy ${{ matrix.app }}
     
     steps:
-      - name: Deploy ${{ matrix.app }}
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build and Deploy ${{ matrix.app }}
         run: |
           echo "Deploying ${{ matrix.app }}..."
           npx nx build ${{ matrix.app }}
