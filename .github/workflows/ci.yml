@@ -21,19 +21,21 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Install Nx CLI & jq
-        run: npm install -g nx jq
-
+          
       - name: Get Affected Apps
         id: affected
         run: |
           AFFECTED_APPS=$(npx nx show projects --affected --json | jq -c '.[]')
           echo "affected_apps=$AFFECTED_APPS" >> "$GITHUB_ENV"
           echo "affected_apps=$AFFECTED_APPS" >> "$GITHUB_OUTPUT"
+          
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Nx CLI & jq
+        run: npm install -g nx jq
+
+
 
   deploy:
     needs: affected
