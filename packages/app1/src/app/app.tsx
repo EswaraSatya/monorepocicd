@@ -8,6 +8,7 @@ export function App() {
     <div>
       
       <NxWelcome title="app1" />
+      <h1>hello</h1>
     </div>
   );
 }
