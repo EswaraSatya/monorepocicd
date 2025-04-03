@@ -5,6 +5,7 @@ import NxWelcome from './nx-welcome';
 const App1 = React.lazy(() => import('app1/Module'));
 const App2 = React.lazy(() => import('app2/Module'));
 
+
 export function App() {
   return (
     <BrowserRouter>
