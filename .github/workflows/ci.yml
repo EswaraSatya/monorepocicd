@@ -38,15 +38,15 @@ jobs:
           FILTERED_APPS=$(echo "$AFFECTED" | tr ', ' '\n' | grep -E '^(app1|app2|dashboard)$' | jq -R -s -c 'split("\n") | map(select(. != ""))')
           
           echo "Filtered apps: $FILTERED_APPS"
-          echo "apps=$FILTERED_APPS" >> $GITHUB_ENV
+          echo "::set-output name=apps::$FILTERED_APPS"
 
   deploy:
     needs: affected
     runs-on: ubuntu-latest
-    if: env.apps != '[]'  # Ensures it only runs if apps are affected
+    if: ${{ needs.affected.outputs.affected_apps != '[]' && needs.affected.outputs.affected_apps != '' }}
     strategy:
       matrix:
-        app: ${{ fromJson(env.apps) }}
+        app: ${{ fromJson(needs.affected.outputs.affected_apps) }}
     name: 🚀 Deploy ${{ matrix.app }}
     
     steps:
