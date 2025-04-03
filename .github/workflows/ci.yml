@@ -1,0 +1,41 @@
+name: Nx Smart CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - staging
+
+jobs:
+  affected:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Nx CLI
+        run: npm install -g nx
+
+      - name: Print affected projects
+        run: |
+          echo "Affected projects:"
+          npx nx show projects --affected --base=origin/main --head=HEAD
+
+      - name: Build affected apps
+        run: |
+          AFFECTED=$(npx nx show projects --affected --base=origin/main --head=HEAD --json | jq -r '.[]')
+
+          for project in $AFFECTED; do
+            echo "🛠 Building $project"
+            npx nx build $project
+          done

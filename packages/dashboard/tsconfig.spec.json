@@ -1,0 +1,19 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": true,                  // ✅ MUST be true when composite is true
+    "composite": true,                    // ✅ Required for project references
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2020",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "jsx": "react-jsx"
+  }
+}
